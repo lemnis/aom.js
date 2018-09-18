@@ -5,7 +5,7 @@
  * @return {String} attribute's value
  */
 export function get(aom, attributeName) {
-	return aom._values[attributeName] || null;
+	return aom._values[attributeName] || aom._node.getAttribute(attributeName);
 }
 
 /**
@@ -21,7 +21,7 @@ export function set(aom, attributeName, status) {
 		aom._node.setAttribute(attributeName, status);
 	}
 	
-	aom._values[attributeName] = status;
+	aom._values[attributeName] = typeof status != "undefined" ? status.toString() : status;
 	return status;
 }
 

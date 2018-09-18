@@ -5,7 +5,8 @@
  * @return {Boolean} attribute's value
  */
 export function get(aom, attributeName) {
-	var value = aom._values[attributeName];
+	var value = aom._values[attributeName] || aom._node.getAttribute(attributeName);
+
 	if(value == undefined ) return null;
 	return value  == "true" || false;
 }
@@ -23,7 +24,7 @@ export function set(aom, attributeName, status) {
 		aom._node.setAttribute(attributeName, status);
 	}
 
-	aom._values[attributeName] = status;
+	aom._values[attributeName] = status != undefined ? status.toString() : status;
 	return status;
 }
 

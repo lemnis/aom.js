@@ -3,20 +3,20 @@ class EventTarget {
         Object.defineProperty(this, "_listeners", { value: new Map() });
     }
 
-    addEventListener(type, callback) {
+    addEventListener(type, listener, options = {}) {
         if (!this._listeners.has(type)) {
             this._listeners.set(type, []);
         }
-        this._listeners.get(type).push(callback);
+        this._listeners.get(type).push({listener, options});
     }
 
-    removeEventListener(type, callback) {
+    removeEventListener(type, callback, options) {
         if (!this._listeners.has(type)) {
             return;
         }
         var stack = this._listeners.get(type);
         stack.forEach( (listener, i) => {
-            if(listener === callback) {
+            if(listener.listener === callback) {
                 stack.splice(i, 1);
                 return;
             }
@@ -32,7 +32,7 @@ class EventTarget {
         stack.forEach( listener => {
             listener.call(this, event);
         });
-
+        
         return !event.defaultPrevented;
     }
 }

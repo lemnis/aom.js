@@ -1,5 +1,5 @@
 {
-  "name": "aom.js",
+  "name": "aomjs",
   "version": "1.0.0",
   "description": "Polyfill for the Accessibility Object Model",
   "main": "index.js",
@@ -8,18 +8,23 @@
   },
   "author": "",
   "license": "ISC",
+  "browserify": {
+    "transform": [
+      "babelify"
+    ]
+  },
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-plugin-transform-builtin-extend": "^1.1.2",
     "babel-preset-env": "^1.6.1",
     "babelify": "^7.3.0",
-    "browser-sync": "^2.23.6",
+    "browser-sync": "^2.24.4",
     "browserify": "^15.2.0",
     "gulp": "^3.9.1",
     "gulp-jsdoc-to-markdown": "^1.2.2",
-    "gulp-mocha-phantomjs": "^0.12.2",
     "gulp-rename": "^1.2.2",
     "gulp-util": "^3.0.8",
+    "mocha": "^5.0.0",
     "vinyl-source-stream": "^2.0.0"
   }
 }

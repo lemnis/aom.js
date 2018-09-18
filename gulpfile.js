@@ -61,6 +61,6 @@ gulp.task('docs', function () {
 
 gulp.task("serve", ["browserify", "browser-sync", "docs"], function () {
   //when tests.js changes, browserify code and execute tests
-  gulp.watch(["test/tests.js", "src/**/*.js"], ["browserify"]);
+  gulp.watch(["test/tests.js", "test/tests-accessiblenode*.js", "src/**/*.js"], ["browserify"]);
   gulp.watch(["src/**/*.js"], ["docs"]);
 });

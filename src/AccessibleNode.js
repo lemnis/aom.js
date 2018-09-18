@@ -27,11 +27,17 @@ function mutationObserverCallback(mutations) {
 
     mutations.forEach(function (mutation) {
 		let attrName = mutation.attributeName;
-		let newValue = aom._node.getAttribute(attrName);
+		let newValue = aom._node.attributes[attrName] ? aom._node.attributes[attrName].value : undefined;
 		let oldValue = aom._values[attrName];
 
+		aom._defaultValues[attrName] = newValue;
+		// store the default values set by an aria-* attribute
+		if (newValue != oldValue) {
+			aom._defaultValues[attrName] = newValue;
+		}
+
 		// overwrite the attribute if AOM has an different defined value
-		if (oldValue && newValue !== oldValue) {
+		if (oldValue && newValue != oldValue) {
 			aom[attrName] = oldValue;
 		}
     });
@@ -47,13 +53,17 @@ class AccessibleNode extends EventTarget {
 
         // store the node where the AccessibleNode is connected with
 		Object.defineProperty(this, "_node", { value: node });
+
 		// set an hidden object to store all values in
         Object.defineProperty(this, "_values", { value: {}});
+		
+		// store values of aria-* attributes
+        Object.defineProperty(this, "_defaultValues", { value: {}});
 
 		// start the mutation observer if the AccessibleNode is connected to an node
 		if(node) {
 			var observer = new MutationObserver(mutationObserverCallback.bind(this));
-			observer.observe(this._node, { attributes: true, attributeFilter: attributes });
+			observer.observe(this._node, { attributes: true, attributeOldValue: true });
 		}
     }
 }
@@ -719,7 +729,6 @@ Object.defineProperties(AccessibleNode.prototype,
 				if (!(val instanceof AccessibleNodeListConstructor)) {
 					throw new Error("It must be an instance of AccessibleNodeList");
 				}
-				console.log(this, this._values);
 				this._values.owns = val;
 				val.parentAOM = this;
 				val.attribute = "aria-owns";
@@ -732,18 +741,25 @@ Object.defineProperties(AccessibleNode.prototype,
 );
 
 function setAccessibleNode(aom, attribute, value) {
-    if (!(value instanceof AccessibleNode)) {
-        throw new Error("It must be an instance of AccessibleNode");
+	if (value == undefined) {
+		// remove ID of connected element if generated
+		if(aom._values[attribute] && aom._values[attribute].generated_id){
+			aom._values[attribute]._node.removeAttribute("id");
+			aom._values[attribute].generated_id = false;
+		}
+
+		aom._values[attribute] = value;
+		return aom._node.removeAttribute(attribute);;
+	} else if (!(value instanceof AccessibleNode)) {
+		throw new TypeError(`Failed to set the '#{attribute}' property on 'AccessibleNode': The provided value is not of type 'AccessibleNode'`);
 	}
 
-	if (value == undefined) {
-		return aom._node.removeAttribute(value._node.id);
-	} 
-
     if (value._node) {
-		if (!value._node.id) { 
+		if (!value._node.id) {
 			/** @todo remove temp id */
-			value._node.id = "id-" + Date.now();
+			value._node.id = "id-" + parseInt(Math.random() * 1000000);
+			value.generated_id = true;
+			console.log(value, value.generated_id);
 		}
 
 		aom._node.setAttribute(attribute, value._node.id);
@@ -754,7 +770,11 @@ function setAccessibleNode(aom, attribute, value) {
 }
 function getAccessibleNode(aom, attribute) {
 	var value = aom._values[attribute];
-	if (value == undefined) return null;
+	if (value == undefined) {
+		var attr = aom._node.getAttribute(attribute);
+		if(attr == undefined) return null;
+		return elements.get(document.getElementById(attr));
+	}
 	return value;
 }
 

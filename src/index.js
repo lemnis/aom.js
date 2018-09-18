@@ -22,4 +22,21 @@ import AccessibleNodeList from './../src/AccessibleNodeList.js';
         }
     });
 
+    // (function (getAttribute) {
+    //     Element.prototype.getAttribute = function (name) {
+    //         var attribute = getAttribute.call(this, name);
+
+    //         if(
+    //             name.indexOf("aria-") == 0
+    //             && this.accessibleNode 
+    //             && typeof this.accessibleNode._defaultValues[name] != "undefined"
+    //         ) {
+    //             console.log("get", this.accessibleNode._defaultValues[name])
+    //             return this.accessibleNode._defaultValues[name];
+    //         }
+
+    //         return attribute;
+    //     }
+    // })(Element.prototype.getAttribute);
+
 // }

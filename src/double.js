@@ -5,7 +5,7 @@
  * @return {Number} attribute's value
  */
 export function get(aom, attributeName) {
-	var value = aom._values[attributeName];
+	var value = aom._values[attributeName] || aom._node.getAttribute(attributeName);;
 	if (value == undefined) return null;
 	return Number(value);
 }
@@ -23,7 +23,7 @@ export function set(aom, attributeName, str) {
 		aom._node.setAttribute(attributeName, str);
 	}
 
-	aom._values[attributeName] = status;
+	aom._values[attributeName] = status.toString();
 	return status;
 }
 
